@@ -9,74 +9,59 @@ char a_num1[] = "A01069532";
 #include <stdlib.h>
 #include <string.h>
 
-void justifyLine(char *line, int lineLength) {
-    // Your justifyLine function remains the same
- 
+void justifyLine(const char *line, int lineLength) {
+   
+    int len = strlen(line);
+
+    if (len > lineLength) { 
+        printError("Error. The word processor can't display the output.");
+    } else if (len == lineLength) {
+        printf("%s\n", line);
+    } else {
+        // check how much spaces need to be added 
+    }
 
 
-    printf("%s\n", line);
+
 }
 
 
 
-int main(int argc, char *argv[]) {
 
-    // Check arguments
+
+
+
+
+int main(int argc, char *argv[]) {
+    // Check for the correct number of command-line arguments
     if (argc != 3) {
-        fprintf(stderr, "Usage: %s <lineLength> <inputFile>\n", argv[0]);
-        return 1;
+        printError("Usage: <executable> <lineLength> <inputFile>");
     }
 
     int lineLength = atoi(argv[1]);
     char *inputFileName = argv[2];
 
-    FILE *file = fopen(inputFileName, "r");
-    if (file == NULL) {
-        perror("Error opening input file");
-        return 1;
+    // Open the input file
+    FILE *inputFile = fopen(inputFileName, "r");
+    if (inputFile == NULL) {
+        printError("Error opening input file");
     }
 
-    char *lines[1000]; // An array of pointers to store lines, assuming up to 1000 lines
+    char line[1024];
 
-    int line_count = 0; // Keep track of the number of lines read
-
-    char buffer[1024]; // Temporary buffer for reading lines
-
-
-    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+    // Read and justify each line from the input file
+    while (fgets(line, sizeof(line), inputFile) != NULL) {
         // Remove the trailing newline character
-        size_t len = strlen(buffer);
-        if (len > 0 && buffer[len - 1] == '\n') {
-            buffer[len - 1] = '\0';
+        size_t len = strlen(line);
+        if (len > 0 && line[len - 1] == '\n') {
+            line[len - 1] = '\0';
         }
 
-        if (strlen(buffer) > lineLength) {
-            fprintf(stderr, "Error. The word processor can't display the output.\n");
-            return 1;
-        }
-
-        // Allocate memory for the line and copy it
-        lines[line_count] = strdup(buffer);
-        if (lines[line_count] == NULL) {
-            perror("Error allocating memory");
-            return 1;
-        }
-
-        line_count++;
+        justifyLine(line, lineLength);
     }
 
-    fclose(file); // Close the file
-
-    // Now, 'lines' contains all the lines from the file as an array of strings
-
-    // Process and justify each line if needed
-    for (int i = 0; i < line_count; i++) {
-        // Process or manipulate lines[i] as needed
-        justifyLine(lines[i], lineLength);
-        free(lines[i]); // Free the memory for each line
-    }
-
+    // Close the input file
+    fclose(inputFile);
 
     return 0;
-    
 }
