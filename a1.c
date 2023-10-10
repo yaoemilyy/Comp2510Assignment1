@@ -1,13 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 // update this with your A number
 char a_num[] = "A01350336";
 char a_num1[] = "A01069532";
-
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 void justifyLine(const char *line, int lineLength) {
    
