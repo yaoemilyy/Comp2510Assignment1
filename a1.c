@@ -39,7 +39,6 @@ int main(int argc, char *argv[]) {
 
     // Read the file 
     char charArray[characterCount];
-    char value;
     int count = 0;
  
     // Stores characters from input into charArray
