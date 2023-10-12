@@ -63,8 +63,6 @@ int main(int argc, char *argv[]) {
         arr[i] = (char *)malloc(rows * sizeof(char));
     }
 
-    printf("%d, %d", characterCount, lineLength);
-
     int charCountArray[rows][1];
 
     // Sort charArray into arr
@@ -83,7 +81,6 @@ int main(int argc, char *argv[]) {
 
         if(charArray[placeholder] == ' ' || charArray[placeholder + 1] == ' ' || placeholder == characterCount) {
             //Restore charArray element into arr
-	    printf("placeholder initial: %d\n", placeholder);
 	    for(int i = 0; i < placeholder - start; i++){
 	        arr[initializedRow][i] = charArray[start + i];
 	    }
@@ -93,11 +90,9 @@ int main(int argc, char *argv[]) {
 	    placeholder = placeholder + lineLength + 1;
 	    initializedRow++;
 	    remainSize = lineLength;
-	    printf("placeholder: %d\n", placeholder);
         } else if(charArray[placeholder] != ' ' && remainSize != 0){
 	    placeholder--;
 	    remainSize--;
-	    printf("%dremainsize: %d\n", initializedRow, remainSize);
         } else if(charArray[placeholder] != ' ' && remainSize == 0){
             printf("Error. The word processor can't display the output.\n");
             return 1;
@@ -139,6 +134,7 @@ int main(int argc, char *argv[]) {
 	    int difference = lineLength - charCountArray[i][0];
 	    int position = 0;
 	    int positionCount = 0;
+	    int positionOffset = 0;
 		if(spaceArray[i][0] == 0){
 	            while(charCountArray[i][0] != lineLength){
 		    
@@ -149,7 +145,6 @@ int main(int argc, char *argv[]) {
 
 		        // Insert the new element at the desired position
                         arr[i][0] = ' ';
-		        printf("charCountArray: %d\n", charCountArray[i][0]);
 		        charCountArray[i][0] = charCountArray[i][0] + 1;
 		    }
 		} else {
@@ -161,11 +156,20 @@ int main(int argc, char *argv[]) {
 			}	
 			position = spaceArray[i][positionCount];
 			printf("position: %d\n", position);
-		        for(int l = lineLength; l > position; l--){
-			    arr[i][l] = arr[i][l - 1];
+			if(positionCount == 1){
+		            for(int l = lineLength; l > position; l--){
+			        arr[i][l] = arr[i][l - 1];
+				arr[i][position] = ' ';
+			    }
+			} else {
+			    for(int l = lineLength; l > position + positionOffset; l--){
+			        arr[i][l] = arr[i][l - 1];
+				int temp = positionOffset + 1;
+			    	arr[i][position + temp] = ' ';
+			    }
+			    positionOffset++;
 			}
 			
-			// arr[i][position] = ' ';
 		        charCountArray[i][0] = charCountArray[i][0] + 1;
 		    }		
 		}
