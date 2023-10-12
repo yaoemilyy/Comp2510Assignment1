@@ -79,13 +79,19 @@ int main(int argc, char *argv[]) {
 	    }
 	}
 
-        if(charArray[placeholder] == ' ' || charArray[placeholder + 1] == ' ' || placeholder == characterCount) {
+        if(charArray[placeholder] == ' ' || charArray[placeholder] == '-' || charArray[placeholder + 1] == ' ' || placeholder == characterCount) {
             //Restore charArray element into arr
-	    for(int i = 0; i < placeholder - start; i++){
-	        arr[initializedRow][i] = charArray[start + i];
-	    }
-	  
+	    if(charArray[placeholder] == '-'){
+	        for(int i = 0; i <= placeholder - start; i++){
+		    arr[initializedRow][i] = charArray[start + i];
+		}
+	    charCountArray[initializedRow][0] = placeholder + 1 - start;
+	    } else {
+	        for(int i = 0; i < placeholder - start; i++){
+	            arr[initializedRow][i] = charArray[start + i];
+	        }
 	    charCountArray[initializedRow][0] = placeholder - start;
+	    }
 	    start = placeholder + 1;  
 	    placeholder = placeholder + lineLength + 1;
 	    initializedRow++;
