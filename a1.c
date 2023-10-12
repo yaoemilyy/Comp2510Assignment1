@@ -141,18 +141,29 @@ int main(int argc, char *argv[]) {
 	    int position = 0;
 	    int positionCount = 0;
 	    int positionOffset = 0;
+	    int flip = 0;
 		if(spaceArray[i][0] == 0){
-	            while(charCountArray[i][0] != lineLength){
-		    
-		        // Shift elements down to make room for the new element
-                        for (int k = lineLength; k > 0; k--) {
-                            arr[i][k] = arr[i][k - 1];
-                        }
+	        position = charCountArray[i][0];
+	    	for(int k = 0; k < difference; k++){
+		        if(flip == 0){
+                            for(int k = lineLength; k > 0; k--) {
+                                arr[i][k] = arr[i][k - 1];
+                            }
+			    flip = 1;
+			    positionOffset++;
+			} else {
+			    for(int k = lineLength; k > position + positionOffset; k--){
+				arr[i][k] = arr[i][k - 1];
+			    }
+			    flip = 0;
+			    arr[i][position + positionOffset] = ' ';
+			}
 
 		        // Insert the new element at the desired position
                         arr[i][0] = ' ';
 		        charCountArray[i][0] = charCountArray[i][0] + 1;
 		    }
+		position = 0;
 		} else {
 		    for(int k = 0; k < difference; k++){
 			if(positionCount == spaceArray[i][0]){
