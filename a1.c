@@ -61,17 +61,17 @@ void insertSpaces(char *line, int line_len, int total_len) {
 
 
 
-void justifyLine(const char *line, int lineLength) {
-    int len = strlen(line);
+//void justifyLine(const char *line, int lineLength) {
+    //int len = strlen(line);
 
-    if (len > lineLength) {
-        fprintf(stderr, "Error. The word processor can't display the output.\n");
-    } else if (len == lineLength) {
-        printf("%s\n", line);
-    } else {
-        insertSpaces(line, len, lineLength);
-    }
-}
+  //  if (len > lineLength) {
+  //      fprintf(stderr, "Error. The word processor can't display the output.\n");
+  //  } else if (len == lineLength) {
+  //      printf("%s\n", line);
+//    } else {
+//        insertSpaces(line, len, lineLength);
+//    }
+//}
 
 
 
@@ -80,37 +80,53 @@ int main(int argc, char *argv[]) {
 
    // Check for the correct number of command-line arguments
     if (argc != 3) {
-        fprintf(stderr, "Usage: %s <lineLength> <inputFile>\n", argv[0]);
+        printf("Usage: %s <lineLength> <inputFile>\n", argv[0]);
         return 1;
     }
 
     int lineLength = atoi(argv[1]);
+    char *inputFileName = argv[2];
+
+    // Error message for line length zero and below
     if (lineLength <= 0) {
-        fprintf(stderr, "Error. The word processor can't display the output.\n");
+        printf("Error. The word processor can't display the output.\n");
         return 1;
     }
-
-    char *inputFileName = argv[2];
 
     // Open the input file
     FILE *inputFile = fopen(inputFileName, "r");
     if (inputFile == NULL) {
-        fprintf(stderr, "Error opening input file\n");
+        printf("Failed to open the input file\n");
         return 1;
     }
 
-    char line[1024]; // Might Change
+    // Reads the amount of characters
+    int characterCount = 0;
+    int ch;
+    while((ch = fgetc(inputFile)) != EOF) {
+   	    characterCount++;
 
-    // Read and justify each line from the input file
-    while (fgets(line, sizeof(line), inputFile) != NULL) {
-        // Remove the trailing newline character
-        size_t len = strlen(line);
-        if (len > 0 && line[len - 1] == '\n') {
-            line[len - 1] = '\0';
-        }
-
-        justifyLine(line, lineLength);
     }
+    
+    // Read the file 
+    char charArray[characterCount];
+    char value;
+    int count = 0;
+ 
+    while(fscanf(inputFile, "%c", &value) == 1) {
+        charArray[count] = value;
+	count++;	
+	printf("count: %d value: %c\n", count, value);
+    }
+   
+    // Allocates the array memory
+//    int rows = stgLength / lineLength + 1; 
+  //  char **arr=(char **)malloc(lineLength * sizeof(char *));
+   // for(int i = 0; i < lineLength; i++){
+//	arr[i] = (char)malloc(rows * sizeof(char));
+ //   }
+
+   // justifyLine(line, lineLength);
 
     // Close the input file
     fclose(inputFile);
