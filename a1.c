@@ -79,8 +79,9 @@ int main(int argc, char *argv[]) {
 	    }
 	}
 
-        if(charArray[placeholder] == ' ' || charArray[placeholder] == '-' || charArray[placeholder + 1] == ' ' || placeholder == characterCount) {
-            //Restore charArray element into arr
+        if(charArray[placeholder] == ' ' || charArray[placeholder] == '-' || placeholder == characterCount) {
+		
+	    //Restore charArray element into arr
 	    if(charArray[placeholder] == '-'){
 	        for(int i = 0; i <= placeholder - start; i++){
 		    arr[initializedRow][i] = charArray[start + i];
@@ -105,14 +106,6 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // Test array
-    for(int i = 0 ; i < rows; i++){
-	for(int j = 0; j < lineLength; j++){
-	    printf("%c", arr[i][j]);
-	}
-	printf("\n");
-    }
-
     // Getting Space count and Position
     int spaceArray[rows][lineLength + 1]; // [][0] = # of spaces, [][0<] = position of spaces
     for(int i = 0; i < rows; i++){
@@ -125,14 +118,6 @@ int main(int argc, char *argv[]) {
 	}
 	spaceArray[i][0] = spaces;
     }	
-
-    // Test space array
-    for(int i = 0; i < rows; i++){
-	int spaces = spaceArray[i][0];
-	for(int j = 0; j < spaces + 1; j++){
-            printf("spaceArray[%d][%d] = %d\n", i, j, spaceArray[i][j]);
-	}
-    }
 
     // Adding spacing to arr
     for(int i = 0; i < rows; i++){
@@ -172,7 +157,6 @@ int main(int argc, char *argv[]) {
 			    positionCount++;
 			}	
 			position = spaceArray[i][positionCount];
-			printf("position: %d\n", position);
 			if(positionCount == 1){
 		            for(int l = lineLength; l > position; l--){
 			        arr[i][l] = arr[i][l - 1];
@@ -194,7 +178,7 @@ int main(int argc, char *argv[]) {
 	}
     }
 
-    // Testing new array
+    // Printing new array
     for(int i = 0 ; i < rows; i++){
         for(int j = 0; j < lineLength; j++){
             printf("%c", arr[i][j]);
