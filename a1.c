@@ -105,28 +105,67 @@ int main(int argc, char *argv[]) {
     int ch;
     while((ch = fgetc(inputFile)) != EOF) {
    	    characterCount++;
-
     }
     
+    rewind(inputFile);
+
     // Read the file 
     char charArray[characterCount];
     char value;
     int count = 0;
  
-    while(fscanf(inputFile, "%c", &value) == 1) {
-        charArray[count] = value;
-	count++;	
-	printf("count: %d value: %c\n", count, value);
+    // Stores characters from input into charArray
+    while((ch = fgetc(inputFile)) != EOF) {	
+	if(ch!='\n') {
+	    charArray[count] = ch;
+	    count++;
+	}
     }
-   
-    // Allocates the array memory
-//    int rows = stgLength / lineLength + 1; 
-  //  char **arr=(char **)malloc(lineLength * sizeof(char *));
-   // for(int i = 0; i < lineLength; i++){
-//	arr[i] = (char)malloc(rows * sizeof(char));
- //   }
 
-   // justifyLine(line, lineLength);
+    for (int i = 0; i < count; i++) {
+        printf("charArray[%d]: %c\n", i, charArray[i]);
+    }
+
+    // Allocates the array memory
+    int rows = characterCount / lineLength + 1; 
+    char **arr=(char **)malloc(lineLength * sizeof(char *));
+    for(int i = 0; i < lineLength; i++){
+        arr[i] = (char *)malloc(rows * sizeof(char));
+    }
+  
+    // Sort charArray into arr
+    int placeholder = lineLength;
+    int remainSize = lineLength;
+    int initializedRow = 0;
+    int start = 0;
+    while(rows != initializedRow){
+        if(charArray[placeholder] == ' ') {
+            //Restore charArray element into arr
+	    for(int i = 0; i < lineLength; i++){
+	        arr[initializedRow][i] = charArray[start + i];
+	    }
+	    
+	    start = placeholder;
+	    placeholder = placeholder + lineLength; 
+            initializedRow++;
+	    remainSize = lineLength;
+        } else if(charArray[placeholder] != ' ' && remainSize != 0){
+            placeholder--;
+	    remainSize--;
+        } else if(charArray[placeholder] != ' ' && remainSize == 0){
+            printf("Error. The word processor can't display the output.\n");
+            return 1;
+        }
+    }
+
+    for(int i = 0 ; i < rows; i++){
+	for(int j = 0; j < lineLength; j++){
+	    printf("%c", arr[i][j]);
+	}
+	printf("\n");
+    }
+
+    //justifyLine(line, lineLength);
 
     // Close the input file
     fclose(inputFile);
