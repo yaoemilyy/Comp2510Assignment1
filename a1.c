@@ -2,80 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-void insertSpaces(char *line, int line_len, int total_len) {
-    int word_count = 0;
-    char *word = line;
-    while (*word != '\0') {
-        if (*word == ' ') {
-            word_count++;
-            word++;
-        } else {
-            word++;
-        }
-    }
-
-    if (word_count == 0) {
-        // Center a single word
-        int total_spaces = total_len - line_len;
-        int spaces_before = total_spaces / 2;
-        int spaces_after = total_spaces - spaces_before;
-
-        for (int i = 0; i < spaces_before; i++) {
-            printf(" ");
-        }
-        printf("%s", line);
-        for (int i = 0; i < spaces_after; i++) {
-            printf(" ");
-        }
-        printf("\n");
-        return;
-    }
-
-    int spaces_to_insert = total_len - line_len + word_count - 1;
-    int spaces_before_word = spaces_to_insert / word_count;
-    int extra_spaces = spaces_to_insert % word_count;
-
-    int word_started = 0;
-    for (int i = 0; i < strlen(line); i++) {
-        if (line[i] != ' ') {
-            if (word_started) {
-                if (extra_spaces > 0) {
-                    printf(" ");
-                    extra_spaces--;
-                }
-                for (int j = 0; j < spaces_before_word; j++) {
-                    printf(" ");
-                }
-            }
-            word_started = 1;
-            printf("%c", line[i]);
-        } else {
-            printf(" ");
-            word_started = 0;
-        }
-    }
-
-    printf("\n");
-}
-
-
-
-//void justifyLine(const char *line, int lineLength) {
-    //int len = strlen(line);
-
-  //  if (len > lineLength) {
-  //      fprintf(stderr, "Error. The word processor can't display the output.\n");
-  //  } else if (len == lineLength) {
-  //      printf("%s\n", line);
-//    } else {
-//        insertSpaces(line, len, lineLength);
-//    }
-//}
-
-
-
-
 int main(int argc, char *argv[]) {
 
    // Check for the correct number of command-line arguments
@@ -104,7 +30,9 @@ int main(int argc, char *argv[]) {
     int characterCount = 0;
     int ch;
     while((ch = fgetc(inputFile)) != EOF) {
-   	    characterCount++;
+        if(ch != '\n'){
+    	    characterCount++;
+	}
     }
     
     rewind(inputFile);
@@ -116,48 +44,67 @@ int main(int argc, char *argv[]) {
  
     // Stores characters from input into charArray
     while((ch = fgetc(inputFile)) != EOF) {	
-	if(ch!='\n') {
-	    charArray[count] = ch;
-	    count++;
-	}
-    }
-
-    for (int i = 0; i < count; i++) {
-        printf("charArray[%d]: %c\n", i, charArray[i]);
+        if (ch != '\n') {
+            charArray[count] = ch;
+            count++;
+        }
     }
 
     // Allocates the array memory
-    int rows = characterCount / lineLength + 1; 
+    int rows;
+
+    if(characterCount == lineLength){
+        rows = characterCount / lineLength;
+    } else {
+        rows = characterCount / lineLength + 1; 
+    }
     char **arr=(char **)malloc(lineLength * sizeof(char *));
     for(int i = 0; i < lineLength; i++){
         arr[i] = (char *)malloc(rows * sizeof(char));
     }
-  
+
+    printf("%d, %d", characterCount, lineLength);
+
+    int charCountArray[rows][1];
+
     // Sort charArray into arr
     int placeholder = lineLength;
     int remainSize = lineLength;
     int initializedRow = 0;
     int start = 0;
     while(rows != initializedRow){
-        if(charArray[placeholder] == ' ') {
-            //Restore charArray element into arr
+
+	if(characterCount == lineLength){
 	    for(int i = 0; i < lineLength; i++){
+	        arr[initializedRow][i] = charArray[i];
+		charCountArray[0][0] = lineLength;
+	    }
+	}
+
+        if(charArray[placeholder] == ' ' || charArray[placeholder + 1] == ' ' || placeholder == characterCount) {
+            //Restore charArray element into arr
+	    printf("placeholder initial: %d\n", placeholder);
+	    for(int i = 0; i < placeholder - start; i++){
 	        arr[initializedRow][i] = charArray[start + i];
 	    }
-	    
-	    start = placeholder;
-	    placeholder = placeholder + lineLength; 
-            initializedRow++;
+	  
+	    charCountArray[initializedRow][0] = placeholder - start;
+	    start = placeholder + 1;  
+	    placeholder = placeholder + lineLength + 1;
+	    initializedRow++;
 	    remainSize = lineLength;
+	    printf("placeholder: %d\n", placeholder);
         } else if(charArray[placeholder] != ' ' && remainSize != 0){
-            placeholder--;
+	    placeholder--;
 	    remainSize--;
+	    printf("%dremainsize: %d\n", initializedRow, remainSize);
         } else if(charArray[placeholder] != ' ' && remainSize == 0){
             printf("Error. The word processor can't display the output.\n");
             return 1;
         }
     }
 
+    // Test array
     for(int i = 0 ; i < rows; i++){
 	for(int j = 0; j < lineLength; j++){
 	    printf("%c", arr[i][j]);
@@ -165,7 +112,74 @@ int main(int argc, char *argv[]) {
 	printf("\n");
     }
 
-    //justifyLine(line, lineLength);
+    // Getting Space count and Position
+    int spaceArray[rows][lineLength + 1]; // [][0] = # of spaces, [][0<] = position of spaces
+    for(int i = 0; i < rows; i++){
+	int spaces = 0;
+        for(int j = 0; j < lineLength; j++){
+	    if(arr[i][j] == ' '){
+	        spaces++;
+		spaceArray[i][spaces] = j;
+	    }
+	}
+	spaceArray[i][0] = spaces;
+    }	
+
+    // Test space array
+    for(int i = 0; i < rows; i++){
+	int spaces = spaceArray[i][0];
+	for(int j = 0; j < spaces + 1; j++){
+            printf("spaceArray[%d][%d] = %d\n", i, j, spaceArray[i][j]);
+	}
+    }
+
+    // Adding spacing to arr
+    for(int i = 0; i < rows; i++){
+	for(int j = 0; j < lineLength; j++){
+	    int difference = lineLength - charCountArray[i][0];
+	    int position = 0;
+	    int positionCount = 0;
+		if(spaceArray[i][0] == 0){
+	            while(charCountArray[i][0] != lineLength){
+		    
+		        // Shift elements down to make room for the new element
+                        for (int k = lineLength; k > 0; k--) {
+                            arr[i][k] = arr[i][k - 1];
+                        }
+
+		        // Insert the new element at the desired position
+                        arr[i][0] = ' ';
+		        printf("charCountArray: %d\n", charCountArray[i][0]);
+		        charCountArray[i][0] = charCountArray[i][0] + 1;
+		    }
+		} else {
+		    for(int k = 0; k < difference; k++){
+			if(positionCount == spaceArray[i][0]){
+			    positionCount = 1;
+			} else {
+			    positionCount++;
+			}	
+			position = spaceArray[i][positionCount];
+			printf("position: %d\n", position);
+		        for(int l = lineLength; l > position; l--){
+			    arr[i][l] = arr[i][l - 1];
+			}
+			
+			// arr[i][position] = ' ';
+		        charCountArray[i][0] = charCountArray[i][0] + 1;
+		    }		
+		}
+	    
+	}
+    }
+
+    // Testing new array
+    for(int i = 0 ; i < rows; i++){
+        for(int j = 0; j < lineLength; j++){
+            printf("%c", arr[i][j]);
+        }
+        printf("\n");
+    }
 
     // Close the input file
     fclose(inputFile);
